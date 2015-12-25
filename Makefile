@@ -1,73 +1,90 @@
-.SECONDARY:
+STATE_FIPS = \
+	01|alabama \
+	02|alaska \
+	04|arizona \
+	05|arkansas \
+	06|california \
+	08|colorado \
+	09|connecticut \
+	10|delaware \
+	11|district_of_columbia \
+	12|florida \
+	13|georgia \
+	15|hawaii \
+	16|idaho \
+	17|illinois \
+	18|indiana \
+	19|iowa \
+	20|kansas \
+	21|kentucky \
+	22|louisiana \
+	23|maine \
+	24|maryland \
+	25|massachusetts \
+	26|michigan \
+	27|minnesota \
+	28|mississippi \
+	29|missouri \
+	30|montana \
+	31|nebraska \
+	32|nevada \
+	33|new_hampshire \
+	34|new_jersey \
+	35|new_mexico \
+	36|new_york \
+	37|north_carolina \
+	38|north_dakota \
+	39|ohio \
+	40|oklahoma \
+	41|oregon \
+	42|pennsylvania \
+	44|rhode_island \
+	45|south_carolina \
+	46|south_dakota \
+	47|tennessee \
+	48|texas \
+	49|utah \
+	50|vermont \
+	51|virginia \
+	53|washington \
+	54|west_virginia \
+	55|wisconsin \
+	56|wyoming
 
-alabama_house.shp: data/gz/tl_2015_01_sldl.zip
-alabama_senate.shp: data/gz/tl_2015_01_sldl.zip
+all: all_house all_senate
+################################################################################
+# GENERATE STATE TARGETS
+################################################################################
+define CHAMBER_TARGETS_TEMPLATE
+data/shp/$(word 2,$(subst |, ,$(state)))_house.shp: data/gz/house/tl_2015_$(word 1,$(subst |, ,$(state)))_sldl.zip
+data/shp/$(word 2,$(subst |, ,$(state)))_senate.shp: data/gz/senate/tl_2015_$(word 1,$(subst |, ,$(state)))_sldu.zip
+endef
 
-# 	 state_fips |         name
-# ------------+----------------------
-#  01         | Alabama
-#  02         | Alaska
-#  04         | Arizona
-#  05         | Arkansas
-#  06         | California
-#  08         | Colorado
-#  09         | Connecticut
-#  10         | Delaware
-#  11         | District of Columbia
-#  12         | Florida
-#  13         | Georgia
-#  15         | Hawaii
-#  16         | Idaho
-#  17         | Illinois
-#  17         | Illinois
-#  18         | Indiana
-#  18         | Indiana
-#  19         | Iowa
-#  20         | Kansas
-#  21         | Kentucky
-#  22         | Louisiana
-#  23         | Maine
-#  24         | Maryland
-#  25         | Massachusetts
-#  26         | Michigan
-#  26         | Michigan
-#  27         | Minnesota
-#  27         | Minnesota
-#  28         | Mississippi
-#  29         | Missouri
-#  30         | Montana
-#  31         | Nebraska
-#  32         | Nevada
-#  33         | New Hampshire
-#  34         | New Jersey
-#  35         | New Mexico
-#  36         | New York
-#  36         | New York
-#  37         | North Carolina
-#  38         | North Dakota
-#  39         | Ohio
-#  39         | Ohio
-#  40         | Oklahoma
-#  41         | Oregon
-#  42         | Pennsylvania
-#  42         | Pennsylvania
-#  72         | Puerto Rico
-#  44         | Rhode Island
-#  45         | South Carolina
-#  46         | South Dakota
-#  47         | Tennessee
-#  48         | Texas
-#  78         | U.S. Virgin Islands
-#  49         | Utah
-#  50         | Vermont
-#  51         | Virginia
-#  53         | Washington
-#  54         | West Virginia
-#  55         | Wisconsin
-#  55         | Wisconsin
-#  56         | Wyoming
+$(foreach state,$(STATE_FIPS),$(eval $(CHAMBER_TARGETS_TEMPLATE)))
 
-data/gz/%.zip:
-	mkdir -p $(dir $@)
-	curl 'ftp://ftp2.census.gov/geo/tiger/TIGER2015/SLDL/$(notdir $@)' -o $@.download
-	mv $@.download $@
+all_house: $(foreach T,$(STATE_FIPS),data/shp/$(word 2,$(subst |, ,$(T)))_house.shp)
+all_senate: $(foreach T,$(STATE_FIPS),data/shp/$(word 2,$(subst |, ,$(T)))_senate.shp)
+
+################################################################################
+# SHAPEFILES: META
+################################################################################
+data/shp/%.shp:
+	 rm -rf $(basename $@)
+	 mkdir -p $(basename $@)
+	 tar --exclude="._*" -xzm -C $(basename $@) -f $<
+
+	 for file in `find $(basename $@) -name '*.shp'`; do \
+		 ogr2ogr -dim 2 -f 'ESRI Shapefile' -t_srs 'EPSG:4326' $(basename $@).$${file##*.} $$file; \
+		 chmod 644 $(basename $@).$${file##*.}; \
+	 done
+	 rm -rf $(basename $@)
+
+data/gz/house/%.zip:
+	 mkdir -p $(dir $@)
+	 curl 'ftp://ftp2.census.gov/geo/tiger/TIGER2015/SLDL/$(notdir $@)' -o $@.download
+	 mv $@.download $@
+
+data/gz/senate/%.zip:
+	 mkdir -p $(dir $@)
+	 curl 'ftp://ftp2.census.gov/geo/tiger/TIGER2015/SLDU/$(notdir $@)' -o $@.download
+	 mv $@.download $@
