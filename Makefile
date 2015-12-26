@@ -1,69 +1,69 @@
 STATE_FIPS = \
-	01|alabama \
-	02|alaska \
-	04|arizona \
-	05|arkansas \
-	06|california \
-	08|colorado \
-	09|connecticut \
-	10|delaware \
-	11|district_of_columbia \
-	12|florida \
-	13|georgia \
-	15|hawaii \
-	16|idaho \
-	17|illinois \
-	18|indiana \
-	19|iowa \
-	20|kansas \
-	21|kentucky \
-	22|louisiana \
-	23|maine \
-	24|maryland \
-	25|massachusetts \
-	26|michigan \
-	27|minnesota \
-	28|mississippi \
-	29|missouri \
-	30|montana \
-	31|nebraska \
-	32|nevada \
-	33|new_hampshire \
-	34|new_jersey \
-	35|new_mexico \
-	36|new_york \
-	37|north_carolina \
-	38|north_dakota \
-	39|ohio \
-	40|oklahoma \
-	41|oregon \
-	42|pennsylvania \
-	44|rhode_island \
-	45|south_carolina \
-	46|south_dakota \
-	47|tennessee \
-	48|texas \
-	49|utah \
-	50|vermont \
-	51|virginia \
-	53|washington \
-	54|west_virginia \
-	55|wisconsin \
-	56|wyoming
+	01|al|alabama \
+	02|ak|alaska \
+	04|az|arizona \
+	05|ar|arkansas \
+	06|ca|california \
+	08|co|colorado \
+	09|ct|connecticut \
+	10|de|delaware \
+	11|dc|district_of_columbia \
+	12|fl|florida \
+	13|ga|georgia \
+	15|hi|hawaii \
+	16|id|idaho \
+	17|il|illinois \
+	18|in|indiana \
+	19|ia|iowa \
+	20|ks|kansas \
+	21|ky|kentucky \
+	22|la|louisiana \
+	23|me|maine \
+	24|md|maryland \
+	25|ma|massachusetts \
+	26|mi|michigan \
+	27|mn|minnesota \
+	28|ms|mississippi \
+	29|mo|missouri \
+	30|mt|montana \
+	31|ne|nebraska \
+	32|nv|nevada \
+	33|nh|new_hampshire \
+	34|nj|new_jersey \
+	35|nm|new_mexico \
+	36|ny|new_york \
+	37|nc|north_carolina \
+	38|nd|north_dakota \
+	39|oh|ohio \
+	40|ok|oklahoma \
+	41|or|oregon \
+	42|pa|pennsylvania \
+	44|ri|rhode_island \
+	45|sc|south_carolina \
+	46|sd|south_dakota \
+	47|tn|tennessee \
+	48|tx|texas \
+	49|ut|utah \
+	50|vt|vermont \
+	51|va|virginia \
+	53|wa|washington \
+	54|wv|west_virginia \
+	55|wi|wisconsin \
+	56|wy|wyoming \
 
 all: all_house all_senate
 ################################################################################
 # GENERATE STATE TARGETS
 ################################################################################
 define CHAMBER_TARGETS_TEMPLATE
-data/shp/$(word 2,$(subst |, ,$(state)))_house.shp: data/gz/house/tl_2015_$(word 1,$(subst |, ,$(state)))_sldl.zip
-data/shp/$(word 2,$(subst |, ,$(state)))_senate.shp: data/gz/senate/tl_2015_$(word 1,$(subst |, ,$(state)))_sldu.zip
+data/shp/$(word 3,$(subst |, ,$(state)))_house.shp: data/gz/house/tl_2015_$(word 1,$(subst |, ,$(state)))_sldl.zip
+data/shp/$(word 3,$(subst |, ,$(state)))_senate.shp: data/gz/senate/tl_2015_$(word 1,$(subst |, ,$(state)))_sldu.zip
 endef
 
 $(foreach state,$(STATE_FIPS),$(eval $(CHAMBER_TARGETS_TEMPLATE)))
 
-all_house: $(foreach T,$(STATE_FIPS),data/shp/$(word 2,$(subst |, ,$(T)))_house.shp)
-all_senate: $(foreach T,$(STATE_FIPS),data/shp/$(word 2,$(subst |, ,$(T)))_senate.shp)
+all_house: $(foreach T,$(STATE_FIPS),data/shp/$(word 3,$(subst |, ,$(T)))_house.shp)
+all_senate: $(foreach T,$(STATE_FIPS),data/shp/$(word 3,$(subst |, ,$(T)))_senate.shp)
 
 ################################################################################
 # SHAPEFILES: META
