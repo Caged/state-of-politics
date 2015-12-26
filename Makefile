@@ -53,7 +53,7 @@ STATE_FIPS = \
 
 OPENSTATES_ARCHIVE_DATE=2015-12-09
 
-all: all_house all_senate
+all: all_house all_senate all_openstates
 
 ################################################################################
 # MAKE TARGET GENERATION
