@@ -51,6 +51,8 @@ STATE_FIPS = \
 	55|wi|wisconsin \
 	56|wy|wyoming \
 
+OPENSTATES_ARCHIVE_DATE=2015-12-09
+
 all: all_house all_senate
 
 ################################################################################
@@ -62,7 +64,7 @@ data/shp/$(word 3,$(subst |, ,$(state)))_senate.shp: data/gz/senate/tl_2015_$(wo
 endef
 
 define OPENSTATES_TARGETS_TEMPLATE
-data/csv/$(word 3,$(subst |, ,$(state))).csv: data/gz/openstates/2015-12-09-$(word 2,$(subst |, ,$(state)))-csv.zip
+data/csv/$(word 3,$(subst |, ,$(state))).csv: data/gz/openstates/$(OPENSTATES_ARCHIVE_DATE)-$(word 2,$(subst |, ,$(state)))-csv.zip
 endef
 
 $(foreach state,$(STATE_FIPS),$(eval $(CHAMBER_TARGETS_TEMPLATE)))
@@ -70,6 +72,7 @@ $(foreach state,$(STATE_FIPS),$(eval $(OPENSTATES_TARGETS_TEMPLATE)))
 
 all_house: $(foreach T,$(STATE_FIPS),data/shp/$(word 3,$(subst |, ,$(T)))_house.shp)
 all_senate: $(foreach T,$(STATE_FIPS),data/shp/$(word 3,$(subst |, ,$(T)))_senate.shp)
+all_openstates: $(foreach T,$(STATE_FIPS),data/csv/$(word 3,$(subst |, ,$(T))).csv)
 
 ################################################################################
 # EXTRACTION AND PREP
