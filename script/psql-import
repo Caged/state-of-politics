@@ -29,3 +29,8 @@ done
 for shp in data/shp/*_senate.shp; do
   shp2pgsql -a -s 4326 -i -D $shp $senate_table | psql $db_name
 done
+
+psql -c "create index active_district_chamber_idx on ${openstates_table} (active, district, chamber)" $db_name
+psql -c "create index active_party_idx on ${openstates_table} (active, party)" $db_name
+psql -c "create index lower_idx on ${house_table} (sldlst)" $db_name
+psql -c "create index upper_idx on ${senate_table} (sldust)" $db_name
