@@ -1,1 +1,25 @@
 #!/bin/bash
+
+: ${db_name:=state_of_politics}
+: ${senate_table:=senate_districts}
+: ${house_table:=house_districts}
+
+# make -k
+
+dropdb --if-exists --interactive $db_name
+createdb --encoding='utf-8' --template=template0 $db_name
+psql -c 'create extension postgis' $db_name
+
+shp2pgsql -t 2D -s 4326 -i -D data/shp/alabama_house.shp $house_table | psql $db_name
+psql -c "delete from $house_table" $db_name
+
+shp2pgsql -t 2D -s 4326 -i -D data/shp/alabama_senate.shp $senate_table | psql $db_name
+psql -c "delete from $senate_table" $db_name
+
+for shp in data/shp/*_house.shp; do
+  shp2pgsql -a -s 4326 -i -D $shp $house_table | psql $db_name
+done
+
+for shp in data/shp/*_senate.shp; do
+  shp2pgsql -a -s 4326 -i -D $shp $senate_table | psql $db_name
+done
