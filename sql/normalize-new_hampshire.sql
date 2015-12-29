@@ -1,7 +1,8 @@
--- Openstates lists new hampshires lower district ids as COUNTY_NAME #.  This doesn't
--- match the format the US Census Beauro uses, which is a digit.  This converts the
+-- Openstates lists New Hampshire's lower district ids as COUNTY_NAME #.  This doesn't
+-- match the format the US Census Bureau uses, which is a digit.  This converts the
 -- census name to the openstates data district format and then assigns the id to the
--- district as it is defined by the US census
+-- district as it is defined by the US census.
+-- tl;dr - set openstates district to match district assigned by us census
 with normalized_district_names as (
   select
     sldlst,
