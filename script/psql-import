@@ -36,6 +36,14 @@ psql -c "update ${openstates_table} set district = lpad(district, 3, '0') where 
 psql -c "update ${openstates_table} set district = (select array_to_string(array_agg(i), '') from
   (select (regexp_matches(district, '[A-Z0-9]', 'g'))[1] i) t) where state = 'vt'" $db_name
 
+# Add fips codes to openstates data.  As a general good practice, these should
+# always be included with any state-specific data
+psql -c "alter table ${openstates_table} add column state_fips text"  $db_name
+while read line; do
+    fips_code=$(echo $line | awk -F"|" '{print $1}')
+    state_abbr=$(echo $line | awk -F"|" '{print $2}')
+    psql -c "update ${openstates_table} set state_fips = '${fips_code}' where state = '${state_abbr}'" $db_name
+done < script/state-fips-codes
 psql -c "create index active_district_chamber_idx on ${openstates_table} (active, district, chamber)" $db_name
 psql -c "create index active_party_idx on ${openstates_table} (active, party)" $db_name
 psql -c "create index lower_idx on ${house_table} (sldlst)" $db_name
