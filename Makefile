@@ -49,7 +49,7 @@ STATE_FIPS = \
 	53|wa|washington \
 	54|wv|west_virginia \
 	55|wi|wisconsin \
-	56|wy|wyoming \
+	56|wy|wyoming
 
 OPENSTATES_ARCHIVE_DATE=2015-12-09
 
