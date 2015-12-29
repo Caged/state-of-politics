@@ -94,8 +94,11 @@ data/csv/%.csv:
 	tar --exclude="._*" -xzm -C $(basename $@) -f $<
 
 	for file in `find $(basename $@) -name '*_legislators.csv'`; do \
-		mv $$file $(basename $@).csv; \
+		mv $$file $(basename $@)-temp.csv; \
 	done
+
+	script/normalize-district-ids $(basename $@)-temp.csv $*
+	rm $(basename $@)-temp.csv
 	rm -rf $(basename $@)
 
 ################################################################################
