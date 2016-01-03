@@ -6,6 +6,7 @@
 : ${openstates_table=openstates_data}
 
 # make -k
+bundle install
 
 dropdb --if-exists --interactive $db_name
 createdb --encoding='utf-8' --template=template0 $db_name
@@ -43,6 +44,9 @@ while read line; do
     state_abbr=$(echo $line | awk -F"|" '{print $2}')
     psql -c "update ${openstates_table} set state_fips = '${fips_code}' where state = '${state_abbr}'" $db_name
 done < script/state-fips-codes
+
+psql -f sql/normalize-new_hampshire.sql $db_name
+psql -f sql/normalize-massachusetts.sql $db_name
 
 # Add indexes
 psql -c "create index active_district_chamber_idx on ${openstates_table} (active, district, chamber)" $db_name

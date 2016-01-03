@@ -6,16 +6,26 @@
 with normalized_district_names as (
   select
     sldlst,
-    concat_ws(' ',
-      substring(namelsad, '([a-zA-Z]+) County'),
-      substring(namelsad, 'No. ([0-9]+)')) as normalized_name
+    substring(namelsad, '([0-9a-z]+\s[a-zA-Z]+) District') as normalized_name,
+    namelsad
   from house_districts
-  where statefp = '33'
+  where statefp = '25' and
+  sldlst != 'ZZZ' and
+  namelsad != 'Barnstable, Dukes & Nantucket District'
+
+  -- Because this one is special
+  union select
+    sldlst,
+    namelsad as normalized_name,
+    namelsad
+  from house_districts
+  where statefp = '25' and
+  namelsad = 'Barnstable, Dukes & Nantucket District'
 )
 
 update openstates_data
   set district = sldlst
   from normalized_district_names
-  where district = normalized_name and
-  state = 'nh' and
-  chamber = 'lower';
+  where district = normalized_name
+  and state = 'ma'
+  and chamber = 'lower';
