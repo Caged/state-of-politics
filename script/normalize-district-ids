@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'chronic'
+require 'csv'
+
+csv_path = ARGV[0]
+state    = ARGV[1]
+csv_in = CSV.open(csv_path, 'r', headers: true, header_converters: :symbol)
+csv_out = CSV.open(csv_path.sub('-temp', ''), 'w', write_headers: true, headers: csv_in.first.headers)
+
+def update_district(district, state)
+  if state == 'massachusetts'
+    puts district
+    return district.sub(/^Thirty-Second/, '32nd') if district =~ /^Thirty-Second/
+    return district.sub(/^Twenty-Second/, '22nd') if district =~ /^Twenty-Second/
+    return district.sub(/^Second/, '2nd') if district =~ /^Second/
+    Chronic::Numerizer.numerize(district)
+  else
+    district
+  end
+end
+
+csv_in.each do |row|
+  row[:district] = update_district(row[:district], state) if row[:district]
+  csv_out << row
+end
