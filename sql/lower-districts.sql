@@ -9,4 +9,6 @@ left outer join openstates_data od
   on od.district = hd.sldlst
   and od.state_fips = hd.statefp
   and chamber = 'lower'
-  and active;
+  and active
+where
+  sldlst != 'ZZZ' -- water/border region;
