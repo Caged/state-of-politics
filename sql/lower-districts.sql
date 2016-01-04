@@ -3,6 +3,7 @@ select leg_id as id,
        party,
        sldlst,
        district,
+       state,
        geom
 from house_districts hd
 left outer join openstates_data od
