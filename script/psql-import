@@ -33,7 +33,7 @@ done
 
 
 # Normalize district numbers.
-psql -c "update ${openstates_table} set district = lpad(district, 3, '0') where district !~* '[A-Z]' or state = 'mn'" $db_name
+psql -c "update ${openstates_table} set district = lpad(district, 3, '0') where district !~* '[A-Z]' or state in ('mn', 'md')" $db_name
 
 
 # Add fips codes to openstates data.  As a general good practice, these should
