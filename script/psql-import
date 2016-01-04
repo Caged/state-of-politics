@@ -47,6 +47,7 @@ done < script/state-fips-codes
 
 psql -f sql/normalize-new_hampshire.sql $db_name
 psql -f sql/normalize-massachusetts.sql $db_name
+psql -f sql/normalize-vermont.sql $db_name
 
 # Add indexes
 psql -c "create index active_district_chamber_idx on ${openstates_table} (active, district, chamber)" $db_name
