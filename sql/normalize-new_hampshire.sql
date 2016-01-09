@@ -17,5 +17,5 @@ update openstates_data
   set district = sldlst
   from normalized_district_names
   where district = normalized_name and
-  state = 'nh' and
+  state_abbr = 'nh' and
   chamber = 'lower';

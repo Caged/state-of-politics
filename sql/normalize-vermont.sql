@@ -12,5 +12,5 @@ update openstates_data
   from normalized_district_names
   -- What's a few more different variations
   where district = case when normalized_name = 'Grand-Isle-Chittenden' then 'Grand Isle-Chittenden' else normalized_name end and
-  state = 'vt' and
+  state_abbr = 'vt' and
   chamber = 'lower';
