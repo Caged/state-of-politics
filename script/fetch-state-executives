@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+require 'nokogiri'
+require 'open-uri'
+require 'csv'
+require 'pp'
+
+def underscore(str)
+  str.gsub(/\./, '').gsub(/\s+/, '_').downcase
+end
+
+def name_and_party(cell)
+  name = cell.content.strip
+  party = cell.at('span').attr('class').strip[0].downcase
+  [name, party]
+end
+
+composed_headers = []
+doc = Nokogiri::HTML(open("https://www.multistate.com/state-resources/state-executive-officials"))
+table = doc.css '#main .views-table'
+headers = table.css('thead th').map { |th| th.content.strip }
+headers.each_with_index do |header, index|
+  composed_headers << underscore(header)
+  next if header == 'State'
+  composed_headers << underscore(header + ' party')
+end
+
+csv = CSV.open('data/state-executives.csv', 'w+', :headers => composed_headers, :write_headers => true)
+
+table.css('tr').map do |row|
+  data = []
+  cells = row.css 'td'
+  next if cells[0].nil?
+  state = cells[0].content.strip
+  gov,govp  = name_and_party(cells[1])
+  ltg, ltgp = name_and_party(cells[2])
+  ag, agp   = name_and_party(cells[3])
+  sos, sosp = name_and_party(cells[4])
+  tr, trp   = name_and_party(cells[5])
+
+  csv << [state, gov, govp, ltg, ltgp, ag, agp, sos, sosp, tr, trp]
+end
