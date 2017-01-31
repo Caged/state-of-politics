@@ -1,0 +1,5 @@
+#!/bin/bash
+
+db_name='state_legislature'
+dropdb --interactive --if-exist $db_name
+createdb $db_name
