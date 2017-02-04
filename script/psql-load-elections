@@ -14,5 +14,4 @@ DELIMITER E'\t'
 ESCAPE E'\\'
 EOF
 
-echo $create_sql
 cat data/raw/results.txt | psql -d $db_name -c "$create_sql"
