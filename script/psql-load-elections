@@ -1,10 +1,13 @@
 #!/bin/bash
 
 db_name='states'
+
+make data/raw/results.txt
+
 dropdb --interactive --if-exist $db_name
 createdb $db_name
 
-psql -f config/schema.sql $db_name
+psql -f sql/schema.sql $db_name
 
 read -r -d '' create_sql <<'EOF'
 COPY elections
