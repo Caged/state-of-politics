@@ -1,0 +1,28 @@
+{
+  "name": "state-of-politics",
+  "version": "1.0.0",
+  "description": "state election data visualization",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Caged/state-of-politics.git"
+  },
+  "author": "Justin Palmer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Caged/state-of-politics/issues"
+  },
+  "homepage": "https://github.com/Caged/state-of-politics#readme",
+  "dependencies": {
+    "canvas": "^1.6.2",
+    "csv-parser": "^1.11.0",
+    "d3": "^4.5.0",
+    "jsdom": "^9.10.0"
+  }
+}
