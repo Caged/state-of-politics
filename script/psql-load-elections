@@ -1,5 +1,18 @@
 #!/bin/bash
 
-db_name='state_legislature'
+db_name='states'
 dropdb --interactive --if-exist $db_name
 createdb $db_name
+
+psql -f config/schema.sql $db_name
+
+read -r -d '' create_sql <<'EOF'
+COPY elections
+FROM STDIN
+WITH CSV HEADER
+DELIMITER E'\t'
+ESCAPE E'\\'
+EOF
+
+echo $create_sql
+cat data/raw/results.txt | psql -d $db_name -c "$create_sql"
