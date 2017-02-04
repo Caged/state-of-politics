@@ -2,6 +2,15 @@
 
 const csv = require('csv-parser')
 const fs = require('fs')
+const d3 = require('d3')
+const jsdom = require('jsdom')
+
+const MARGIN = { TOP: 60, RIGHT: 60, BOTTOM: 60, LEFT: 60 }
+const HEIGHT = 5000 - MARGIN.TOP - MARGIN.BOTTOM
+const WIDTH  = 3000 - MARGIN.LEFT - MARGIN.RIGHT
+
+const MIN_YEAR = new Date(1967, 0, 1)
+const MAX_YEAR = new Date(2010, 0, 1)
 
 const STATES = {
     AL: 'Alabama',
@@ -57,8 +66,9 @@ const STATES = {
     WY: 'Wyoming'
 }
 
-const MIN_YEAR = 1967
-const MAX_YEAR = 2010
+const STATE_ABBRS = Object.keys(STATES).reverse()
+
+const document = jsdom.jsdom()
 
 const options = {
     separator: '\t',
@@ -66,9 +76,42 @@ const options = {
     strict: true
 }
 
-fs.createReadStream('data/raw/results.txt')
-  .pipe(csv(options))
-  .on('data', function (row) {
-    console.log(data)
-    shitfuck
-  })
+const y = d3.scaleBand()
+  .domain(STATE_ABBRS)
+  .padding(0.1)
+  .rangeRound([HEIGHT, 0])
+
+const x = d3.scaleTime()
+  .domain([MIN_YEAR, MAX_YEAR])
+  .range([0, WIDTH])
+
+const yax = d3.axisLeft()
+  .scale(y)
+
+const xax = d3.axisTop()
+  .ticks(d3.timeYear.every(1))
+  .scale(x)
+
+const svg = d3.select(document.body).append('svg')
+    .attr('width', WIDTH + MARGIN.LEFT + MARGIN.RIGHT)
+    .attr('height', HEIGHT + MARGIN.TOP + MARGIN.BOTTOM)
+  .append('g')
+    .attr('transform', 'translate(' + MARGIN.LEFT + ',' + MARGIN.TOP + ')')
+
+svg.append('g').call(yax)
+svg.append('g').call(xax)
+
+const stateGroup = svg.selectAll('.state')
+  .data(STATE_ABBRS)
+.enter().append('g')
+  .attr('transform', (d) => 'translate(0,' + y(d) + ')')
+
+
+fs.writeFileSync('out.svg', d3.select(document.body).node().innerHTML)
+
+// fs.createReadStream('data/raw/results.txt')
+//   .pipe(csv(options))
+//   .on('data', function (row) {
+//     console.log(data)
+//     shitfuck
+//   })
