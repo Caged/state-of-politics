@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+const commander = require('commander')
+const csv = require('csv-parser')
+const d3 = require('d3')
+const fs = require('fs')
+
+commander
+  .version(require("../package.json").version)
+  .option('-i, --input <csv>', 'input csv data')
+  .option('-o, --output <json>', 'ouptut file for stratified json data')
+  .option('-s --state <state>', 'state to generate data from')
+  .option('-f --year-first <year>', 'start year of elections', parseInt)
+  .option('-l --year-last <year>', 'end year of elections', parseInt)
+  .option('-c --chamber <chamber>', 'u for upper, l for lower, b for both', (c) => c == 'u' ? 8 : 9)
+  .parse(process.argv)
+
+const options = {
+    separator: '\t',
+    escape: '\\',
+    strict: true
+}
+
+// Map data columns to input arguments.  See docs/codebook.pdf for details
+// on each columns
+const columns = new Map()
+columns.set('state', 'v02')
+columns.set('year-first', 'v05')
+columns.set('year-last', 'v05')
+columns.set('chamber', 'v07')
+
+const intermediates = []
+
+fs.createReadStream(commander.input)
+  .pipe(csv(options))
+  .on('data', function (row) {
+    if(row[columns.get('state')] != commander.state)
+      return
+
+    if(!(parseInt(row[columns.get('year-first')]) >= commander.yearFirst))
+      return
+
+    if(!(parseInt(row[columns.get('year-last')]) <= commander.yearLast))
+      return
+
+    if(commander.chamber && parseInt(row[columns.get('chamber')]) != commander.chamber)
+      return
+
+    intermediates.push(row)
+  })
+  .on('end', function() {
+    console.log(intermediates.length)
+  })
