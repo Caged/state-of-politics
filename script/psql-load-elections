@@ -2,19 +2,28 @@
 
 db_name='states'
 
-make data/raw/results.txt
+# make data/raw/results.txt
 
 dropdb --interactive --if-exist $db_name
 createdb $db_name
 
 psql -f sql/schema.sql $db_name
 
-read -r -d '' create_sql <<'EOF'
-COPY elections
+read -r -d '' create_sql_one <<'EOF'
+COPY elections_1967_2010
 FROM STDIN
 WITH CSV HEADER
 DELIMITER E'\t'
 ESCAPE E'\\'
 EOF
 
-cat data/raw/results.txt | psql -d $db_name -c "$create_sql"
+read -r -d '' create_sql_two <<'EOF'
+COPY elections_2011_2012
+FROM STDIN
+WITH CSV HEADER
+DELIMITER E'\t'
+ESCAPE E'\\'
+EOF
+
+cat data/raw/state-legislative-election-returns-2011-2012.tsv | psql -d $db_name -c "$create_sql_two"
+cat data/raw/state-legislative-election-returns-1967-2010.tsv | psql -d $db_name -c "$create_sql_one"
